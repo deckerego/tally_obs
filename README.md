@@ -2,6 +2,8 @@
 
 [Official OBS Plugin Listing](https://obsproject.com/forum/resources/tallypi-push-scene-changes-to-wifi-enabled-tally-lights.1082/)
 
+![Demo using the Pimoroni Unicorn pHat](./docs/images/unicorn_hat_demo.gif)
+
 OBS scripts and web dashboards to control either
 [TallyCircuitPy](https://github.com/deckerego/tally_circuitpy)
 or [TallyPi](https://github.com/deckerego/tally_pi)
