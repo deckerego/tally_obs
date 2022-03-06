@@ -69,7 +69,7 @@ def script_properties():
 
 	video_source_names = list_video_source_names()
 	for source_name in video_source_names:
-		obs.obs_properties_add_text(props, source_name, source_name + " light addr:", obs.OBS_TEXT_DEFAULT)
+		obs.obs_properties_add_text(props, source_name, source_name + " light(s):", obs.OBS_TEXT_DEFAULT)
 
 	return props
 
@@ -91,9 +91,9 @@ def call_tally_light(source, color, brightness):
 
 def fetch_command():
 	command = commandQueue.get()
-	addr = light_mapping[command['source']]
-	if not addr:
-		obs.script_log(obs.LOG_INFO, 'No tally light set for: %s' % (source))
+	addressList = light_mapping[command['source']]
+	if not addressList:
+		obs.script_log(obs.LOG_INFO, 'No tally light set for: %s' % (command['source']))
 		return
 
 	hexColor = hex(command['color'])
@@ -101,16 +101,18 @@ def fetch_command():
 	hexGreen = hexColor[6:8]
 	hexRed = hexColor[8:10]
 	pctBright = command['brightness'] / 10
-	url = 'http://%s:7413/set?color=%s%s%s&brightness=%f' % (addr, hexRed, hexGreen, hexBlue, pctBright)
+	addresses = addressList.split(',')
 
-	try:
-		with urllib.request.urlopen(url, None, http_timeout_seconds) as response:
-			data = response.read()
-			text = data.decode('utf-8')
-			obs.script_log(obs.LOG_INFO, 'Set %s tally light: %s' % (source, text))
+	for address in addresses:
+		url = 'http://%s:7413/set?color=%s%s%s&brightness=%f' % (address.strip(), hexRed, hexGreen, hexBlue, pctBright)
+		try:
+			with urllib.request.urlopen(url, None, http_timeout_seconds) as response:
+				data = response.read()
+				text = data.decode('utf-8')
+				obs.script_log(obs.LOG_INFO, 'Set %s tally light: %s' % (command['source'], text))
 
-	except urllib.error.URLError as err:
-		obs.script_log(obs.LOG_WARNING, 'Error connecting to tally light URL %s: %s' % (url, err.reason))
+		except urllib.error.URLError as err:
+			obs.script_log(obs.LOG_WARNING, 'Error connecting to tally light URL %s: %s' % (url, err.reason))
 
 def list_video_source_names():
 	sources = obs.obs_enum_sources()

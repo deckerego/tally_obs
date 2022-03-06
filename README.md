@@ -21,7 +21,9 @@ An OBS script in both [Python](./scripts/obs_tally_light.py) and
 [Lua](./scripts/obs_tally_light.lua) is provided that maps
 preview/program/idle status to AV input sources. You can chose the color
 and brightness for the status of your input sources, and map each input source
-to the IP address or hostname of your tally light web interface.
+to the IP addresses or hostnames of your tally light web interface. If you want
+to interacet with multiple lights, a comma-separated list of addresses
+can be provided.
 
 ![OBS Plugin Settings](./docs/images/obs_settings.png)
 
