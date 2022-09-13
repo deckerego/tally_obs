@@ -15,9 +15,34 @@ Installing the Python version of the script requires a specific version
 of Python 3.9 with shared libraries installed, and then installing the
 Python script itself.
 
+
+### Installing Python for OBS 28
+
+OBS 28 changed the way the Python distribution was loaded into its
+scripting plugin. Now, rather than being tied to a specific Python release,
+OBS will search for any available installation and attempt to use that.
+From the [commit logs](https://github.com/obsproject/obs-studio/commit/ab21c7e5b098170ca468edc490c2d6705c65e021):
+```
+[OBS now] tries to find a best possible version (starting
+with Python 3.10) down to and including Python 3.6 by existing file
+naming conventions and loads the most recent variant it can find.
+
+User specified search path is either a Python installation directory
+(Windows), or a Framework directory containing `Python.framework`
+(macOS). The dll or dylib names are composed automatically.
+The Python home path is also composed automatically on macOS (where
+it has to point inside the Framework directory).
+```
+
+If you are on a current version of MacOS for example, your can now set
+your "Python Install Path" in the scripts settings dialog 
+to be `/usr/local/Frameworks`. From there OBS 28 will search for an
+appropriate Python version and load its libraries.
+
+
 ### Installing Python for OBS 27
 
-Currently OBS 27 requires Python 3.9 shared libraries in order to execute
+OBS 27 requires Python 3.9 shared libraries in order to execute
 Python scripts. On Windows this can be done using a Python 3.9 installer,
 and on MacOS or Linux this can be most easily managed through `pyenv`.
 
