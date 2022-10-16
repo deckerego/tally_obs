@@ -2,6 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 from queue import SimpleQueue
 import obspython as obs
 import json
+import re
 import urllib.request
 import urllib.error
 
@@ -121,7 +122,7 @@ def list_video_source_names():
 	if sources is not None:
 		for source in sources:
 			source_id = obs.obs_source_get_id(source)
-			if source_id in ['av_capture_input', 'droidcam_obs']:
+			if re.search("^av_capture.*|^droidcam.*", source_id):
 				source_name = obs.obs_source_get_name(source)
 				video_source_names.append(source_name)
 
