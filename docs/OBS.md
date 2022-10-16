@@ -4,10 +4,6 @@ TallyPi was created to work with [OBS](https://obsproject.com/forum/resources/ta
 that fires whenever a video input source switches from program, preview,
 or idle modes.
 
-OBS 26 on MacOS did not support Python scripts, so for those still using that
-version there is a Lua version that invokes `curl` within the Lua runtime.
-All other users are encouraged to use the Python version of the script.
-
 
 ## Installing the Python Script
 
@@ -77,20 +73,6 @@ at https://github.com/deckerego/tally_pi/releases
 Store the script wherever you like, then add the script to OBS by navigating
 to Tools -> Scripts and adding the `obs_tally_light.py` script
 that you just downloaded.
-
-
-## Installing the Lua Script
-
-Download the latest OBS Lua script for TallyPi from the release page
-at https://github.com/deckerego/tally_pi/releases
-
-Store the script wherever you like, then add the script to OBS by navigating
-to Tools -> Scripts and adding the `obs_tally_light.lua` script
-that you just downloaded.
-
-Note that you must have `curl` installed on your machine for the script
-to function. Rather than calling HTTP endpoints directly, the script has
-to make a system call to the `curl` command line tool.
 
 
 ## Configuring the TallyPi Script

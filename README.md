@@ -17,8 +17,7 @@ OBS production box - instead the script pushes out commands directly to your lig
 
 ## OBS Script
 
-An OBS script in both [Python](./scripts/obs_tally_light.py) and
-[Lua](./scripts/obs_tally_light.lua) is provided that maps
+A Python [OBS script](./scripts/obs_tally_light.py) is provided that maps
 preview/program/idle status to AV input sources. You can chose the color
 and brightness for the status of your input sources, and map each input source
 to the IP addresses or hostnames of your tally light web interface. If you want
@@ -36,14 +35,6 @@ the [HTML dashboard page](./scripts/dashboard.html) or the
 [scripts/find_lights.sh](./scripts/find_lights.sh) command-line script to search
 your network for available lights. Either option will provide you with an IPv4
 address for each light found which can be used to setup the OBS plugin.
-
-
-## Supported OBS Plugin Runtime
-
-TallyOBS is available in both [Lua and Python](https://obsproject.com/docs/scripting.html)
-form, however the Python version is recommended given its native threading
-abilities and HTTP support. Given the lack of HTTP client libraries, the Lua
-plugin relies on an OS call to `curl` in order to call the remote tally lights.
 
 
 ## Web Dashboard
