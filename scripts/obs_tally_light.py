@@ -8,6 +8,7 @@ import urllib.error
 
 threadpool = ThreadPoolExecutor(max_workers = 1)
 commandQueue = SimpleQueue()
+settings_map = {}
 light_mapping = {}
 idle_color = int('FF0000FF', 16)
 idle_brightness = 5
@@ -22,9 +23,10 @@ http_timeout_seconds = 4
 def script_description():
 	return "Remote tally lights for camera input sources."
 
-def settings_dict(settings):
+def save_settings(settings):
+	global settings_map
 	settings_json = obs.obs_data_get_json(settings)
-	return json.loads(settings_json)
+	settings_map = json.loads(settings_json)
 
 def script_defaults(settings):
 	obs.obs_data_set_default_int(settings, "tally^IdleColor", int('ffff0000', 16))
@@ -43,13 +45,7 @@ def script_update(settings):
 	global program_color
 	global program_brightness
 
-	video_source_names = list_video_source_names()
-	settings_map = settings_dict(settings)
-
-	for k, v in settings_map.items():
-		if k[0:6] != "tally^" and k in video_source_names:
-			obs.script_log(obs.LOG_INFO, 'Loaded: %s' % (k))
-			light_mapping[k] = v
+	save_settings(settings)
 
 	idle_color = obs.obs_data_get_int(settings, "tally^IdleColor")
 	idle_brightness = obs.obs_data_get_int(settings, "tally^IdleBrightness")
@@ -77,6 +73,14 @@ def script_properties():
 def script_load(settings):
 	obs.obs_frontend_add_event_callback(handle_event)
 
+def load_sources():
+	global settings_map
+	video_source_names = list_video_source_names()
+	for k, v in settings_map.items():
+		if k[0:6] != "tally^" and k in video_source_names:
+			obs.script_log(obs.LOG_INFO, 'Loaded: %s' % (k))
+			light_mapping[k] = v
+
 def handle_event(event):
 	if event is obs.OBS_FRONTEND_EVENT_SCENE_CHANGED:
 		handle_program_change()
@@ -84,6 +88,8 @@ def handle_event(event):
 		handle_preview_change()
 	elif event is obs.OBS_FRONTEND_EVENT_SCRIPTING_SHUTDOWN:
 		handle_exit()
+	elif event is obs.OBS_FRONTEND_EVENT_FINISHED_LOADING:
+		load_sources()
 
 def call_tally_light(source, color, brightness):
 	commandQueue.put({'source': source, 'color': color, 'brightness': brightness});
@@ -184,8 +190,8 @@ def handle_program_change():
 	set_idle_lights()
 
 def handle_exit():
+	obs.script_log(obs.LOG_INFO, 'Turning off tally lights')
 	for src, addressList in light_mapping.items():
-		obs.script_log(obs.LOG_INFO, 'Shutting down [%s]' % (src))
 		addresses = addressList.split(',')
 		for address in addresses:
 			call_api(address.strip(), '00', '00', '00', 0.0)
