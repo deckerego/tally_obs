@@ -46,6 +46,7 @@ def script_update(settings):
 	global program_brightness
 
 	save_settings(settings)
+	load_sources()
 
 	idle_color = obs.obs_data_get_int(settings, "tally^IdleColor")
 	idle_brightness = obs.obs_data_get_int(settings, "tally^IdleBrightness")
