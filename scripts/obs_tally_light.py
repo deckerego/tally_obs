@@ -82,9 +82,8 @@ def handle_event(event):
 		handle_program_change()
 	elif event is obs.OBS_FRONTEND_EVENT_PREVIEW_SCENE_CHANGED:
 		handle_preview_change()
-	elif event is obs.OBS_FRONTEND_EVENT_EXIT:
+	elif event is obs.OBS_FRONTEND_EVENT_SCRIPTING_SHUTDOWN:
 		handle_exit()
-
 
 def call_tally_light(source, color, brightness):
 	commandQueue.put({'source': source, 'color': color, 'brightness': brightness});
@@ -105,15 +104,18 @@ def fetch_command():
 	addresses = addressList.split(',')
 
 	for address in addresses:
-		url = 'http://%s:7413/set?color=%s%s%s&brightness=%f' % (address.strip(), hexRed, hexGreen, hexBlue, pctBright)
-		try:
-			with urllib.request.urlopen(url, None, http_timeout_seconds) as response:
-				data = response.read()
-				text = data.decode('utf-8')
-				obs.script_log(obs.LOG_INFO, 'Set %s tally light: %s' % (command['source'], text))
+		call_api(address.strip(), hexRed, hexGreen, hexBlue, pctBright)
 
-		except urllib.error.URLError as err:
-			obs.script_log(obs.LOG_WARNING, 'Error connecting to tally light URL %s: %s' % (url, err.reason))
+def call_api(address, hexRed, hexGreen, hexBlue, pctBright):
+	url = 'http://%s:7413/set?color=%s%s%s&brightness=%f' % (address, hexRed, hexGreen, hexBlue, pctBright)
+	try:
+		with urllib.request.urlopen(url, None, http_timeout_seconds) as response:
+			data = response.read()
+			text = data.decode('utf-8')
+			obs.script_log(obs.LOG_INFO, 'Setting %s tally light: %s' % (address, text))
+
+	except urllib.error.URLError as err:
+		obs.script_log(obs.LOG_WARNING, 'Error connecting to tally light URL %s: %s' % (url, err.reason))
 
 def list_video_source_names():
 	sources = obs.obs_enum_sources()
@@ -132,7 +134,6 @@ def list_video_source_names():
 def get_item_names_by_scene(source):
 	item_names = []
 	scene = obs.obs_scene_from_source(source)
-	scene_name = obs.obs_source_get_name(source)
 	scene_items = obs.obs_scene_enum_items(scene)
 	if scene_items is not None:
 		for item in scene_items:
@@ -152,7 +153,7 @@ def set_lights_by_items(item_names, color, brightness):
 def set_idle_lights():
 	excluded_items = program_items + preview_items
 
-	for src, addr in light_mapping.items():
+	for src, _ in light_mapping.items():
 		if src not in excluded_items:
 			call_tally_light(src, idle_color, idle_brightness)
 
@@ -183,6 +184,10 @@ def handle_program_change():
 	set_idle_lights()
 
 def handle_exit():
-	threadpool.shutdown()
-	for src, addr in light_mapping.items():
-		call_tally_light(src, "00000000", 0)
+	for src, addressList in light_mapping.items():
+		obs.script_log(obs.LOG_INFO, 'Shutting down [%s]' % (src))
+		addresses = addressList.split(',')
+		for address in addresses:
+			call_api(address.strip(), '00', '00', '00', 0.0)
+	threadpool.shutdown(wait=True)
+	obs.script_log(obs.LOG_INFO, 'Tally lights offline')
