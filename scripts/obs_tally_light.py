@@ -131,7 +131,7 @@ def list_video_source_names():
 	if sources is not None:
 		for source in sources:
 			source_id = obs.obs_source_get_id(source)
-			if re.search("^av_capture.*|^droidcam.*|decklink-input.*|ndi_source.*", source_id):
+			if re.search("^av_capture.*|^droidcam.*|^decklink-input.*|^ndi_source.*", source_id):
 				source_name = obs.obs_source_get_name(source)
 				video_source_names.append(source_name)
 
