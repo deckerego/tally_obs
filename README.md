@@ -2,8 +2,6 @@
 
 [Official OBS Plugin Listing](https://obsproject.com/forum/resources/tallypi-push-scene-changes-to-wifi-enabled-tally-lights.1082/)
 
-![Demo using the Pimoroni Unicorn pHat](./docs/images/unicorn_hat_demo.gif)
-
 OBS scripts and web dashboards to control either
 [TallyCircuitPy](https://github.com/deckerego/tally_circuitpy)
 or [TallyPi](https://github.com/deckerego/tally_pi)
@@ -14,6 +12,9 @@ out directly to the tally lights and controls them over HTTP. This does not use
 the websocket plugin and there is no need to open up any firewall holes to your
 OBS production box - instead the script pushes out commands directly to your lights.
 
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=eRcYikv5V9U" target="_blank">
+ <img src="http://img.youtube.com/vi/eRcYikv5V9U/mqdefault.jpg" alt="Overview of TallyOBS / Pi / CircuitPy" width="320" height="240" border="10" />
+</a>
 
 ## OBS Script
 
